@@ -1,24 +1,51 @@
+# app/controllers/stocks_controller.rb
 class StocksController < ApplicationController
-  skip_before_action :authenticate_user, only: [:index, :show, :create, :update, :destroy]
+  before_action :set_stock, only: [:show, :update, :destroy]
 
   # GET /stocks
   def index
-    symbols = ['AAPL', 'MSFT', 'GOOGL'] # Example list of stock symbols to fetch data for
-    api_key = LFWIVFK03XKNCJIJ # Your Alpha Vantage API key
-
-    stocks_data = []
-
-    symbols.each do |symbol|
-      url = "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=#{symbol}&interval=5min&apikey=#{api_key}"
-      
-      response = HTTParty.get(url)
-      data = JSON.parse(response.body)
-
-      stocks_data << { symbol: symbol, data: data } if data.present?
-    end
-    
-    render json: stocks_data
+    @stocks = Stock.all
+    render json: @stocks
   end
 
-  # Other controller actions (show, create, update, destroy) remain unchanged
+  # GET /stocks/1
+  def show
+    render json: @stock
+  end
+
+  # POST /stocks
+  def create
+    @stock = Stock.new(stock_params)
+
+    if @stock.save
+      render json: @stock, status: :created, location: @stock
+    else
+      render json: @stock.errors, status: :unprocessable_entity
+    end
+  end
+
+  # PATCH/PUT /stocks/1
+  def update
+    if @stock.update(stock_params)
+      render json: @stock
+    else
+      render json: @stock.errors, status: :unprocessable_entity
+    end
+  end
+
+  # DELETE /stocks/1
+  def destroy
+    @stock.destroy
+  end
+
+  private
+    # Use callbacks to share common setup or constraints between actions.
+    def set_stock
+      @stock = Stock.find(params[:id])
+    end
+
+    # Only allow a list of trusted parameters through.
+    def stock_params
+      params.require(:stock).permit(:symbol, :name)
+    end
 end
