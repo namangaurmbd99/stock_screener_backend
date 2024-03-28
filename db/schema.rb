@@ -10,12 +10,29 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_03_19_162202) do
-  create_table "users", force: :cascade do |t|
-    t.string "email"
-    t.string "password"
+ActiveRecord::Schema[7.1].define(version: 2024_03_21_041518) do
+  create_table "prices", force: :cascade do |t|
+    t.integer "stock_id", null: false
+    t.decimal "price"
+    t.datetime "timestamp"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["stock_id"], name: "index_prices_on_stock_id"
+  end
+
+  create_table "stocks", force: :cascade do |t|
+    t.string "symbol"
+    t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
+  create_table "users", force: :cascade do |t|
+    t.string "email"
+    t.string "password_digest"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_foreign_key "prices", "stocks"
 end

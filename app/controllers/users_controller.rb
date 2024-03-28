@@ -17,7 +17,7 @@ class UsersController < ApplicationController
     user = User.new(user_params)
     if user.save
       token = TokenHelper.encode(user_id: user.id)
-      render json: {user: user,  token: token }, status: :created
+      render json: { user: user, token: token }, status: :created
     else
       render json: { errors: user.errors.full_messages }, status: :bad_request
     end
@@ -63,6 +63,6 @@ class UsersController < ApplicationController
 
   # Only allow a trusted parameter "white list" through.
   def user_params
-    params.permit(:email, :password)
+    params.permit(:email, :password, :password_confirmation)
   end
 end
